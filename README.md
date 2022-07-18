@@ -33,7 +33,7 @@ from Grad school days and since the ask was for a HTTP server.
 	
 	c. Could not add unit tests. Have all the interfaces in place to easily mock db interactions and unit test code.
 	
-	d. Could add a linter plugin on my eclipse (apologize for the bad indents in some places)
+	d. Could not add a linter plugin on my IDE (apologize for the bad indents in some places)
   
 The source code is in the master branch.
 Run:
