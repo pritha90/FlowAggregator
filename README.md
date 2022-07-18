@@ -21,13 +21,19 @@ Availability:
 We can have 2 instances of the service deployed in a active<>passive mode, sharing periodic heartbeats. After a timeout the passive instance can serve requests with for example a VIP configuration.
 
 Implemtation Caveats and hurdles:
-1. I am quicker with gRPC server and coding in C++. Turned to Jetty and Java for familiarity from Grad school days and since the ask was for a HTTP server.
+1. I am quicker with gRPC server and coding in C++. Turned to Jetty and Java for familiarity 
+from Grad school days and since the ask was for a HTTP server.
 2. Setting up Kafka locally was painful and expecting someone else to follow steps was unrealistic, hence went with the free trial on Confluent Cloud.
 3. Time was up before interfacing with Redis.
 4. Issues in code: 
+	
 	a. Updates to the tx and rx counter cache should be made atomic, since now a GET could result in tx data for a processed flow but rx data was yet to be updated.
+	
 	b. Now the whole hash map is locked for a single row updation, but with Redis the synchronisation will be more optimised.
+	
 	c. Could not add unit tests. Have all the interfaces in place to easily mock db interactions and unit test code.
+	
+	d. Could add a linter plugin on my eclipse (apologize for the bad indents in some places)
   
 The source code is in the master branch.
 Run:
