@@ -29,8 +29,8 @@ Implemtation Caveats and hurdles:
 	b. Now the whole hash map is locked for a single row updation, but with Redis the synchronisation will be more optimised.
 	c. Could not add unit tests. Have all the interfaces in place to easily mock db interactions and unit test code.
   
-  
+The source code is in the master branch.
 Run:
 1. Dowload aggregator.jar and java.config (attachment in email for Confluent Cloud credentials) into a directory
 2. java aggregator.jar 
-3. Run sh ./tests.sh
+3. Run sh ./curl_tests.sh
