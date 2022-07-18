@@ -38,5 +38,5 @@ from Grad school days and since the ask was for a HTTP server.
 The source code is in the master branch.
 Run:
 1. Dowload aggregator.jar and java.config (attachment in email for Confluent Cloud credentials) into a directory
-2. java aggregator.jar 
+2. java -jar aggregator.jar
 3. Run sh ./curl_tests.sh
