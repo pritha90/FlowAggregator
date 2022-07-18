@@ -1,7 +1,7 @@
 # FlowAggregator
 
 HTTP server used: Embedded Jetty 9.2.11
-Left Jetty’s QueueThreadPool to the default 200 [I am developing on a very out laptop :(]
+Left Jetty’s QueueThreadPool to the default [I am developing on a very out laptop :(]
 
 For data aggregation used Kafka, hosted on Confluent cloud.
 Each WriteApi request will simply write to a Kafka topic with Flowkey= String(src_app + dest_app + vpc_id + hour) and value {bytes_tx, bytes_rx}
