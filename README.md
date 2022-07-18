@@ -31,5 +31,5 @@ Implemtation Caveats and hurdles:
   
   
 Run:
-1. Dowload aggregator.jar and java.config into a directory
+1. Dowload aggregator.jar and java.config (attachment in email for Confluent Cloud credentials) into a directory
 2. java aggregator.jar 
