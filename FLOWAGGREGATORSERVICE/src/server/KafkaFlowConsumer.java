@@ -58,7 +58,7 @@ public class KafkaFlowConsumer implements Runnable{
 	        final Consumer<String, FlowStatsRecord> consumer = new KafkaConsumer<String, FlowStatsRecord>(props);
 	        consumer.subscribe(Arrays.asList(topic));
 	        
-	        System.out.printf("%s started", this.consumer_name);
+	        System.out.printf("%s started.\n", this.consumer_name);
 	        
 	        try {
 	          while (true) {
