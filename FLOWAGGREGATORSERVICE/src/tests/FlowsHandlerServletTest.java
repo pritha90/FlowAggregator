@@ -45,7 +45,6 @@ public class FlowsHandlerServletTest extends Mockito {
 	
 	@BeforeEach
     public void SetUp() throws Exception {
-		System.out.println("@BeforeEach");
         request = mock(HttpServletRequest.class);       
         response = mock(HttpServletResponse.class); 
         db_writer = mock(DatabaseWriterInterface.class);
@@ -130,8 +129,6 @@ public class FlowsHandlerServletTest extends Mockito {
 	
 	@Test
     public void DoGetCannotContructOutputReturnsError() {
-		String data_json = "[{\"src_app\":\"foo\",\"dest_app\":\"bar\""
-				+ ",\"hour\":\"1\",\"bytes_tx\":1000,\"vpc_id\":\"vpc-1\",\"bytes_rx\":300}]";
 		try {
 			when(request.getParameter(Constants.HOUR)).thenReturn("1");
 			Set<String> ret_val = new HashSet<String>();
