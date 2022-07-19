@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import model.Constants;
 import model.DatabaseWriterInterface;
 import model.FlowListCacheInterface;
+import model.FlowLongStatsRecord;
 import model.StatsCacheInterface;
 import utility.FlowValidator;
 import utility.ParserUtility;
@@ -25,17 +26,14 @@ import utility.ParserUtility;
 public class FlowsHandlerServlet extends HttpServlet
 {
 	DatabaseWriterInterface db_writer;
-	StatsCacheInterface tx_global_cache;
-	StatsCacheInterface rx_global_cache;
+	StatsCacheInterface stats_global_cache;
 	FlowListCacheInterface flow_list_global_cache;
 	
-    public FlowsHandlerServlet(StatsCacheInterface tx_global_cache, 
-    		StatsCacheInterface rx_global_cache, 
+    public FlowsHandlerServlet(StatsCacheInterface tx_global_cache,
     		FlowListCacheInterface flow_list_global_cache,
     		DatabaseWriterInterface db_writer) {
 			this.db_writer = db_writer;
-			this.tx_global_cache = tx_global_cache;
-			this.rx_global_cache = rx_global_cache;
+			this.stats_global_cache = tx_global_cache;
 			this.flow_list_global_cache = flow_list_global_cache;
     }
     
@@ -61,8 +59,9 @@ public class FlowsHandlerServlet extends HttpServlet
 		for (String flow_str : cached_set) {
 			try {
 			JSONObject obj = FlowValidator.GetJsonFromKeysStr(flow_str);
-			obj.put(Constants.BYTES_TX, this.tx_global_cache.get(flow_str));
-			obj.put(Constants.BYTES_RX, this.rx_global_cache.get(flow_str));
+			FlowLongStatsRecord record = this.stats_global_cache.get(flow_str);
+			obj.put(Constants.BYTES_TX, record.getTxCount());
+			obj.put(Constants.BYTES_RX, record.getRxCount());
 			json_array.put(obj);
 			} catch (Exception e) {
 				System.err.println(e.getMessage());

@@ -11,6 +11,7 @@ import model.StatsCacheInterface;
 import utility.FlowValidator;
 import model.Constants;
 import model.FlowListCacheInterface;
+import model.FlowLongStatsRecord;
 import model.FlowStatsRecord;
 import model.InMemoryStatsCacheImpl;
 
@@ -29,15 +30,12 @@ public class KafkaFlowConsumer implements Runnable{
 	
 	String consumer_name = "default_consumer";
 	StatsCacheInterface tx_global_cache;
-	StatsCacheInterface rx_global_cache;
 	FlowListCacheInterface flow_list_global_cache;
 	
-	public KafkaFlowConsumer(String consumer_name, StatsCacheInterface tx_global_cache, 
-			StatsCacheInterface rx_global_cache,
+	public KafkaFlowConsumer(String consumer_name, StatsCacheInterface tx_global_cache,
 			FlowListCacheInterface flow_list_global_cache){
 		this.consumer_name = consumer_name;
 		this.tx_global_cache = tx_global_cache;
-		this.rx_global_cache = rx_global_cache;
 		this.flow_list_global_cache = flow_list_global_cache;
     }
 
@@ -63,28 +61,30 @@ public class KafkaFlowConsumer implements Runnable{
 	        try {
 	          while (true) {
 	              ConsumerRecords<String, FlowStatsRecord> records = consumer.poll(Duration.ofMillis(100));
-	              Map<String, Long> tx_map = new HashMap<>(); 
-	              Map<String, Long> rx_map = new HashMap<>(); 
+	              Map<String, FlowLongStatsRecord> local_map = new HashMap<>();
 	              for (ConsumerRecord<String, FlowStatsRecord> record : records) {
 	                String key = record.key();
 	                FlowStatsRecord stat_record = record.value();
-	                tx_map.put(key, tx_map.getOrDefault(key, 0L)+stat_record.getTxCount());
-	                rx_map.put(key, rx_map.getOrDefault(key, 0L)+stat_record.getRxCount());
+	                
+                	FlowLongStatsRecord agg_record = local_map.getOrDefault(key, new FlowLongStatsRecord());
+                	agg_record.incTxAndRxCount(stat_record.getTxCount(),stat_record.getRxCount());
+                	local_map.put(key, agg_record);
+	                
 	                System.out.printf("%s consumed with key %s %n", this.consumer_name, key);
-	              }
-	              if (!tx_map.isEmpty()) {
-		              for (Map.Entry<String, Long> entry : tx_map.entrySet()) {
-		            	  this.tx_global_cache.put(entry.getKey(), this.tx_global_cache.get(
-		            			  entry.getKey()) + entry.getValue());
+	             }
+	              
+	              if (!local_map.isEmpty()) {
+		              for (Map.Entry<String, FlowLongStatsRecord> entry : local_map.entrySet()) {
+		            	  FlowLongStatsRecord cache_record = this.tx_global_cache.get(
+		            			  entry.getKey());
+		            	  cache_record.incTxAndRxCount(entry.getValue().getTxCount(), entry.getValue().getRxCount());
+		            	  this.tx_global_cache.put(entry.getKey(), cache_record);
 		            	  Integer hour_param = FlowValidator.GetHourParameter(entry.getKey());
 		            	  this.flow_list_global_cache.put(hour_param, entry.getKey());
 		              }
-		              for (Map.Entry<String, Long> entry : rx_map.entrySet()) {
-		            	  this.rx_global_cache.put(entry.getKey(), this.rx_global_cache.get(
-		            			  entry.getKey())+ entry.getValue());
-		              }
 	              }
 	            }
+	          
 	        } finally {
 		          consumer.close();
 		    } 

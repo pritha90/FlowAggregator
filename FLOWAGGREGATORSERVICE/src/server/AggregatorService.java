@@ -14,8 +14,7 @@ public class AggregatorService {
 	
 	public static void main(String[] args) throws Exception {
 		
-		StatsCacheInterface tx_global_cache = new InMemoryStatsCacheImpl();
-		StatsCacheInterface rx_global_cache = new InMemoryStatsCacheImpl();
+		StatsCacheInterface global_stats_cache = new InMemoryStatsCacheImpl();
 		FlowListCacheInterface flow_list_global_cache = new InMemoryFlowListCacheImpl();
 		DatabaseWriterInterface db_writer;
 		try {
@@ -29,16 +28,16 @@ public class AggregatorService {
 		registerHttpConnector(server);
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
-		context.addServlet(new ServletHolder(new FlowsHandlerServlet(tx_global_cache,
-				rx_global_cache, flow_list_global_cache, db_writer)),"/flows");
+		context.addServlet(new ServletHolder(new FlowsHandlerServlet(global_stats_cache,
+				 flow_list_global_cache, db_writer)),"/flows");
 		server.setHandler(context);
 		
 		System.out.println("Server Starting. Listening for user requests on 8080.");
 	
 		Thread periodic_aggregator_1 = new Thread(new KafkaFlowConsumer
-				("consumer-1", tx_global_cache, rx_global_cache, flow_list_global_cache));
+				("consumer-1", global_stats_cache, flow_list_global_cache));
 		Thread periodic_aggregator_2 = new Thread(new KafkaFlowConsumer
-				("consumer-2", tx_global_cache, rx_global_cache, flow_list_global_cache));
+				("consumer-2", global_stats_cache, flow_list_global_cache));
 		
 		periodic_aggregator_1.start();
 		periodic_aggregator_2.start();
@@ -46,7 +45,7 @@ public class AggregatorService {
 		
 		periodic_aggregator_1.join();
 		periodic_aggregator_2.join();
-		server.join();		
+		server.join();
 	}
 
 	private static void registerHttpConnector(Server server){
