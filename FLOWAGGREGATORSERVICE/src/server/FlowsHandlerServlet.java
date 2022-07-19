@@ -29,7 +29,7 @@ public class FlowsHandlerServlet extends HttpServlet
 	StatsCacheInterface rx_global_cache;
 	FlowListCacheInterface flow_list_global_cache;
 	
-    FlowsHandlerServlet(StatsCacheInterface tx_global_cache, 
+    public FlowsHandlerServlet(StatsCacheInterface tx_global_cache, 
     		StatsCacheInterface rx_global_cache, 
     		FlowListCacheInterface flow_list_global_cache,
     		DatabaseWriterInterface db_writer) {
@@ -41,7 +41,7 @@ public class FlowsHandlerServlet extends HttpServlet
     
 	private static final long serialVersionUID = 1L;
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {		
 		try {
 			StringBuffer json_buffer = ParserUtility.GetJsonPayload(request);
 			JSONArray obj = new JSONArray(json_buffer.toString());
@@ -54,7 +54,7 @@ public class FlowsHandlerServlet extends HttpServlet
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		Integer hour = Integer.parseInt(request.getParameter(Constants.HOUR));
 		JSONArray json_array = new JSONArray();
 		Set<String> cached_set = new HashSet<String>(this.flow_list_global_cache.get(hour));
@@ -76,7 +76,8 @@ public class FlowsHandlerServlet extends HttpServlet
 			out.print(json_array);
 			response.setContentType("application/json");
 			response.setStatus(HttpServletResponse.SC_OK);
-		} catch (IOException e) {
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 
