@@ -1,10 +1,11 @@
 # FlowAggregator
 
 HTTP server used: Embedded Jetty 9.2.11
-Left Jetty’s QueueThreadPool to the default [I am developing on a very out laptop :(]
+Left Jetty’s QueueThreadPool to the default.
 
 For data aggregation used **Kafka** Queues, hosted on Confluent cloud.
 Each **WriteApi** request will simply write to a Kafka topic with Flowkey= String(src_app + dest_app + vpc_id + hour) and value {bytes_tx, bytes_rx}
+
 The server starts 2 Kafka consumer threads in the same group, which poll every 100 ms and aggregate Kafka messages based on key.
 The consumer thread then updates a **Redis** Cache with <Flowkey, tx_aggregate;rx_aggregate> , Cache<hour, FlowkeysSet>.
 
@@ -27,7 +28,7 @@ Implemtation Caveats and hurdles:
 from Grad school days and since the ask was for a HTTP server.
 2. Setting up Kafka locally was painful and expecting someone else to follow steps was unrealistic, hence went with the free trial on Confluent Cloud.
 3. The current implementation uses a Redis cache instead of a in-memory hash map as before. The user has to have the Redis server installed and running.
-Redis install and start are straightforward. There is no assumption of the Redis cache versio used.n
+Redis install and start are straightforward.
   
 The source code is in the master branch.
 Run:
