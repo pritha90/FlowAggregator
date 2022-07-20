@@ -26,12 +26,12 @@ Implemtation Caveats and hurdles:
 1. I am quicker with gRPC server and coding in C++. Turned to Jetty and Java for familiarity 
 from Grad school days and since the ask was for a HTTP server.
 2. Setting up Kafka locally was painful and expecting someone else to follow steps was unrealistic, hence went with the free trial on Confluent Cloud.
-3. The current implementation uses a Redis cache instead of a in-memory hash map as before. The user 
-4. Issues in code: 
+3. The current implementation uses a Redis cache instead of a in-memory hash map as before. The user has to have the Redis server installed and running.
+Redis install and start are straightforward. There is no assumption of the Redis cache versio used.n
   
 The source code is in the master branch.
 Run:
-1. Please install Redis locally or on CLoud - learn the host IP and port and supply as cmdline args as below. Follow  https://redis.io/docs/getting-started/installation/install-redis-on-mac-os/
+1. Please install the latest version of Redis locally or on CLoud - learn the host IP and port and supply as cmdline args as below. Follow  https://redis.io/docs/getting-started/installation/install-redis-on-mac-os/
 2. Start Redis with cmd "redis-server" before starting the aggregator service.
 3. Dowload aggregator_redis.jar and java.config (attachment in email for Confluent Cloud credentials) into a directory
 4. Run  java -jar aggregator_redis.jar localhost 6379
