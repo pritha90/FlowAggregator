@@ -32,16 +32,16 @@ public class AggregatorService {
 		registerHttpConnector(server);
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
-		context.addServlet(new ServletHolder(new FlowsHandlerServlet(new RedisHandler(redis_host, redis_port, /*uses_jedis_pool=*/true),
+		context.addServlet(new ServletHolder(new FlowsHandlerServlet(new RedisHandlerImpl(redis_host, redis_port, /*uses_jedis_pool=*/true),
 				 null, db_writer)),"/flows");
 		server.setHandler(context);
 		
 		System.out.println("Server Starting. Listening for user requests on 8080.");
 	
 		Thread periodic_aggregator_1 = new Thread(new KafkaFlowConsumer
-				("consumer-1", new RedisHandler(redis_host, redis_port,/*uses_jedis_pool=*/false), null));
+				("consumer-1", new RedisHandlerImpl(redis_host, redis_port,/*uses_jedis_pool=*/false), null));
 		Thread periodic_aggregator_2 = new Thread(new KafkaFlowConsumer
-				("consumer-2", new RedisHandler(redis_host, redis_port,/*uses_jedis_pool=*/false), null));
+				("consumer-2", new RedisHandlerImpl(redis_host, redis_port,/*uses_jedis_pool=*/false), null));
 		
 		periodic_aggregator_1.start();
 		periodic_aggregator_2.start();

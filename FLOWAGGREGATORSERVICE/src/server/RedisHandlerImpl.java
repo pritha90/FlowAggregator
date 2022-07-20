@@ -1,25 +1,21 @@
 package server;
 
-import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
-import model.Constants;
-import model.FlowListCacheInterface;
 import model.FlowLongStatsRecord;
 import model.StatsCacheInterface;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Response;
 
-public class RedisHandler implements StatsCacheInterface {
+public class RedisHandlerImpl implements StatsCacheInterface {
 	public Jedis jedis;
 	JedisPool pool;
 	Boolean uses_jedis_pool;
 	String host;
 	Integer port;
-	public RedisHandler(String host, Integer port, Boolean uses_jedis_pool) {
+	public RedisHandlerImpl(String host, Integer port, Boolean uses_jedis_pool) {
 		this.uses_jedis_pool = uses_jedis_pool;
 		this.host = host;
 		this.port = port;
