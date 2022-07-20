@@ -27,14 +27,12 @@ public class FlowsHandlerServlet extends HttpServlet
 {
 	DatabaseWriterInterface db_writer;
 	StatsCacheInterface stats_global_cache;
-	FlowListCacheInterface flow_list_global_cache;
 	
-    public FlowsHandlerServlet(StatsCacheInterface tx_global_cache,
+    public FlowsHandlerServlet(StatsCacheInterface global_cache,
     		FlowListCacheInterface flow_list_global_cache,
     		DatabaseWriterInterface db_writer) {
 			this.db_writer = db_writer;
-			this.stats_global_cache = tx_global_cache;
-			this.flow_list_global_cache = flow_list_global_cache;
+			this.stats_global_cache = global_cache;
     }
     
 	private static final long serialVersionUID = 1L;
@@ -53,9 +51,10 @@ public class FlowsHandlerServlet extends HttpServlet
 	}
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		Integer hour = Integer.parseInt(request.getParameter(Constants.HOUR));
+		String hour = request.getParameter(Constants.HOUR);
 		JSONArray json_array = new JSONArray();
-		Set<String> cached_set = new HashSet<String>(this.flow_list_global_cache.get(hour));
+		this.stats_global_cache.InitConnection();
+		Set<String> cached_set = (Set<String>) this.stats_global_cache.getMembers(hour);
 		for (String flow_str : cached_set) {
 			try {
 			JSONObject obj = FlowValidator.GetJsonFromKeysStr(flow_str);

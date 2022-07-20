@@ -35,8 +35,7 @@ public class FlowsHandlerServletTest extends Mockito {
 
 	@Mock
 	DatabaseWriterInterface db_writer;
-	StatsCacheInterface tx_global_cache;
-	FlowListCacheInterface flow_list_global_cache;
+	StatsCacheInterface global_cache;
 	HttpServletRequest request;
 	HttpServletResponse response;
 	
@@ -48,10 +47,9 @@ public class FlowsHandlerServletTest extends Mockito {
         request = mock(HttpServletRequest.class);       
         response = mock(HttpServletResponse.class); 
         db_writer = mock(DatabaseWriterInterface.class);
-        tx_global_cache = mock(StatsCacheInterface.class);
-        flow_list_global_cache = mock(FlowListCacheInterface.class);
-        servlet = spy(new FlowsHandlerServlet(tx_global_cache,
-        		flow_list_global_cache,db_writer));
+        global_cache = mock(StatsCacheInterface.class);
+        servlet = spy(new FlowsHandlerServlet(global_cache,
+        		null,db_writer));
     }
 	
 	@Test
@@ -107,10 +105,11 @@ public class FlowsHandlerServletTest extends Mockito {
 				+ ",\"hour\":\"1\",\"bytes_tx\":1000,\"vpc_id\":\"vpc-1\",\"bytes_rx\":300}]";
 		try {
 			when(request.getParameter(Constants.HOUR)).thenReturn("1");
+			
 			Set<String> ret_val = new HashSet<String>();
 			ret_val.add(kFlow1);
-			when(flow_list_global_cache.get(1)).thenReturn(ret_val);
-			when(tx_global_cache.get(kFlow1)).thenReturn(new FlowLongStatsRecord(1000L,300L));
+			when(global_cache.getMembers("1")).thenReturn(ret_val);
+			when(global_cache.get(kFlow1)).thenReturn(new FlowLongStatsRecord(1000L,300L));
 			StringWriter str_writer = new StringWriter();
 			PrintWriter writer = new PrintWriter(str_writer);
 			when(response.getWriter()).thenReturn(writer);
@@ -131,8 +130,8 @@ public class FlowsHandlerServletTest extends Mockito {
 			when(request.getParameter(Constants.HOUR)).thenReturn("1");
 			Set<String> ret_val = new HashSet<String>();
 			ret_val.add(kFlow1);
-			when(flow_list_global_cache.get(1)).thenReturn(ret_val);
-			when(tx_global_cache.get(kFlow1)).thenReturn(new FlowLongStatsRecord(1000L,300L));
+			when(global_cache.getMembers("1")).thenReturn(ret_val);
+			when(global_cache.get(kFlow1)).thenReturn(new FlowLongStatsRecord(1000L,300L));
 			servlet.doGet(request, response);
 			verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {

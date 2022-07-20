@@ -29,18 +29,18 @@ import java.util.Properties;
 public class KafkaFlowConsumer implements Runnable{
 	
 	String consumer_name = "default_consumer";
-	StatsCacheInterface tx_global_cache;
-	FlowListCacheInterface flow_list_global_cache;
+	StatsCacheInterface global_cache;
 	
-	public KafkaFlowConsumer(String consumer_name, StatsCacheInterface tx_global_cache,
+	public KafkaFlowConsumer(String consumer_name, StatsCacheInterface global_cache,
 			FlowListCacheInterface flow_list_global_cache){
 		this.consumer_name = consumer_name;
-		this.tx_global_cache = tx_global_cache;
-		this.flow_list_global_cache = flow_list_global_cache;
+		this.global_cache = global_cache;
     }
 
     @Override
     public void run() {
+    	this.global_cache.InitConnection();
+    	
         final String topic = Constants.TOPIC_NAME;
 
         Properties props;
@@ -75,12 +75,12 @@ public class KafkaFlowConsumer implements Runnable{
 	              
 	              if (!local_map.isEmpty()) {
 		              for (Map.Entry<String, FlowLongStatsRecord> entry : local_map.entrySet()) {
-		            	  FlowLongStatsRecord cache_record = this.tx_global_cache.get(
+		            	  FlowLongStatsRecord cache_record = this.global_cache.get(
 		            			  entry.getKey());
 		            	  cache_record.incTxAndRxCount(entry.getValue().getTxCount(), entry.getValue().getRxCount());
-		            	  this.tx_global_cache.put(entry.getKey(), cache_record);
-		            	  Integer hour_param = FlowValidator.GetHourParameter(entry.getKey());
-		            	  this.flow_list_global_cache.put(hour_param, entry.getKey());
+		            	  this.global_cache.put(entry.getKey(), cache_record);
+		            	  String hour_param = FlowValidator.GetHourParameterAsStr(entry.getKey());
+		            	  this.global_cache.put(hour_param, entry.getKey());
 		              }
 	              }
 	            }

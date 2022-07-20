@@ -5,6 +5,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import model.StatsCacheInterface;
+import redis.clients.jedis.Jedis;
 import model.DatabaseWriterInterface;
 import model.FlowListCacheInterface;
 import model.InMemoryFlowListCacheImpl;
@@ -14,8 +15,6 @@ public class AggregatorService {
 	
 	public static void main(String[] args) throws Exception {
 		
-		StatsCacheInterface global_stats_cache = new InMemoryStatsCacheImpl();
-		FlowListCacheInterface flow_list_global_cache = new InMemoryFlowListCacheImpl();
 		DatabaseWriterInterface db_writer;
 		try {
 			 db_writer = new KafkaProducerImpl();
@@ -28,16 +27,16 @@ public class AggregatorService {
 		registerHttpConnector(server);
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
-		context.addServlet(new ServletHolder(new FlowsHandlerServlet(global_stats_cache,
-				 flow_list_global_cache, db_writer)),"/flows");
+		context.addServlet(new ServletHolder(new FlowsHandlerServlet(new RedisHandler(/*uses_jedis_pool=*/true),
+				 null, db_writer)),"/flows");
 		server.setHandler(context);
 		
 		System.out.println("Server Starting. Listening for user requests on 8080.");
 	
 		Thread periodic_aggregator_1 = new Thread(new KafkaFlowConsumer
-				("consumer-1", global_stats_cache, flow_list_global_cache));
+				("consumer-1", new RedisHandler(/*uses_jedis_pool=*/false), null));
 		Thread periodic_aggregator_2 = new Thread(new KafkaFlowConsumer
-				("consumer-2", global_stats_cache, flow_list_global_cache));
+				("consumer-2", new RedisHandler(/*uses_jedis_pool=*/false), null));
 		
 		periodic_aggregator_1.start();
 		periodic_aggregator_2.start();

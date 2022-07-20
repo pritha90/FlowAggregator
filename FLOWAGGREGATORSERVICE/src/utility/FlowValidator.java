@@ -20,7 +20,7 @@ public static Boolean IsValidFlowLogPostInput(JSONObject json_obj) {
 
 public static FlowRecord MakeFlowRecord(JSONObject json_obj) throws Exception {
 	if (!IsValidFlowLogPostInput(json_obj)) {
-		throw new Exception("Malformed JSON input");
+		throw new Exception("Malformed JSON input. Not the expected Flow-log");
 	}
     String key = MakeKey(json_obj);
     FlowRecord record = new FlowRecord(key, 
@@ -41,6 +41,14 @@ public static Integer GetHourParameter(String input) {
 		return Integer.parseInt(result[result.length - 1]);
 	}
 	return 0;
+}
+
+public static String GetHourParameterAsStr(String input) {
+	String [] result = input.split(";");
+	if (result.length > 0) {
+		return result[result.length - 1];
+	}
+	return "0";
 }
 
 public static String[] SplitKeys(String input) {
