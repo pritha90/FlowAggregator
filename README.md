@@ -31,8 +31,7 @@ from Grad school days and since the ask was for a HTTP server.
   
 The source code is in the master branch.
 Run:
-2. Start Redis https://redis.io/docs/getting-started/installation/install-redis-on-mac-os/
-1. Please install Redis locally or on CLoud - learn the host IP and port and supply as cmdline args as below. Follow 
+1. Please install Redis locally or on CLoud - learn the host IP and port and supply as cmdline args as below. Follow  https://redis.io/docs/getting-started/installation/install-redis-on-mac-os/
 2. Start Redis with cmd "redis-server" before starting the aggregator service.
 3. Dowload aggregator_redis.jar and java.config (attachment in email for Confluent Cloud credentials) into a directory
 4. Run  java -jar aggregator_redis.jar localhost 6379
