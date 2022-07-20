@@ -15,6 +15,7 @@ The number of concurrent requests my AggregationService is capped by that of the
 The number of consumer threads in the AggregationService can be increased for faster data processing (currently 2). We can also have consumers in different groups.
 
 Kafka configuration: The cluster has one topic and 6 partitions, with a replication factor of 3.
+
 Redis used as Cache: In my local setup I have redis running locally on my laptop. In production Redis would be running in the Cloud. Redis does asynch
 replication across replicas and can persist to disk as append-only logs.
 
