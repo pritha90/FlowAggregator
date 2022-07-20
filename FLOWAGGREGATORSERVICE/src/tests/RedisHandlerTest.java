@@ -20,21 +20,21 @@ import server.RedisHandler;
 public class RedisHandlerTest {
 	@Test
 	public void HandlerPutKeyStats_1() {
-		RedisHandler handler = new RedisHandler(false);
+		RedisHandler handler = new RedisHandler("", 5, false);
 		handler.jedis = mock(Jedis.class);
 		handler.put("key", new FlowLongStatsRecord());
 		verify(handler.jedis, times(1)).set("key","0;0");
 	}
 	@Test
 	public void HandlerPutKeyStats_2() {
-		RedisHandler handler = new RedisHandler(false);
+		RedisHandler handler = new RedisHandler("", 5, false);
 		handler.jedis = mock(Jedis.class);
 		handler.put("key", new FlowLongStatsRecord(10004L, 900000000L));
 		verify(handler.jedis, times(1)).set("key","10004;900000000");
 	}
 	@Test
 	public void HandlerGettKeyStatsForGoodString() {
-		RedisHandler handler = new RedisHandler(false);
+		RedisHandler handler = new RedisHandler("", 5, false);
 		handler.jedis = mock(Jedis.class);
 		when(handler.jedis.get("key")).thenReturn("10004;900000000");
 		FlowLongStatsRecord record = handler.get("key");
@@ -43,7 +43,7 @@ public class RedisHandlerTest {
 	}
 	@Test
 	public void HandlerGetKeyStatsForMalformedStringIsZero() {
-		RedisHandler handler = new RedisHandler(false);
+		RedisHandler handler = new RedisHandler("", 5, false);
 		handler.jedis = mock(Jedis.class);
 		when(handler.jedis.get("key")).thenReturn("100040000000");
 		FlowLongStatsRecord record = handler.get("key");
@@ -52,7 +52,7 @@ public class RedisHandlerTest {
 	}
 	@Test
 	public void HandlerGetKeyStatsWhenNullReturned() {
-		RedisHandler handler = new RedisHandler(false);
+		RedisHandler handler = new RedisHandler("", 5, false);
 		handler.jedis = mock(Jedis.class);
 		when(handler.jedis.get("key")).thenReturn(null);
 		FlowLongStatsRecord record = handler.get("key");
@@ -61,14 +61,14 @@ public class RedisHandlerTest {
 	}
 	@Test
 	public void HandlerPutString() {
-		RedisHandler handler = new RedisHandler(false);
+		RedisHandler handler = new RedisHandler("", 5, false);
 		handler.jedis = mock(Jedis.class);
 		handler.put("key", "a;b;c;d");
 		verify(handler.jedis, times(1)).sadd("key","a;b;c;d");
 	}
 	@Test
 	public void HandlerGetMemberStringsEmptyWhenNullReturned() {
-		RedisHandler handler = new RedisHandler(false);
+		RedisHandler handler = new RedisHandler("", 5, false);
 		handler.jedis = mock(Jedis.class);
 		when(handler.jedis.get("key")).thenReturn(null);
 		Set<String> returned_set = handler.getMembers("key");
@@ -77,7 +77,7 @@ public class RedisHandlerTest {
 	}
 	@Test
 	public void HandlerGetMemberStringsValid() {
-		RedisHandler handler = new RedisHandler(false);
+		RedisHandler handler = new RedisHandler("", 5, false);
 		handler.jedis = mock(Jedis.class);
 		Set<String> input = new HashSet<String>(Arrays.asList("b","c"));
 		when(handler.jedis.smembers("key")).thenReturn(input);

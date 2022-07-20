@@ -17,14 +17,18 @@ public class RedisHandler implements StatsCacheInterface {
 	public Jedis jedis;
 	JedisPool pool;
 	Boolean uses_jedis_pool;
-	public RedisHandler(Boolean uses_jedis_pool) {
+	String host;
+	Integer port;
+	public RedisHandler(String host, Integer port, Boolean uses_jedis_pool) {
 		this.uses_jedis_pool = uses_jedis_pool;
+		this.host = host;
+		this.port = port;
 		if (this.uses_jedis_pool) {
 			JedisPoolConfig config = new JedisPoolConfig();
 			config.setMaxActive(64);
 			config.setMaxIdle(10);
 			config.setMaxWait(10);
-			pool = new JedisPool(config, Constants.REDIS_SERVER, Constants.REDIS_PORT);
+			pool = new JedisPool(config, this.host, this.port);
 		}
 	}
 	
@@ -33,10 +37,10 @@ public class RedisHandler implements StatsCacheInterface {
 			if (this.uses_jedis_pool) {
 				jedis= pool.getResource();				
 			} else {
-				jedis = new Jedis(Constants.REDIS_SERVER, Constants.REDIS_PORT);
+				jedis = new Jedis(this.host, this.port);
 			}
 			jedis.connect();
-
+			System.out.println("Jedis connected on " + this.host + ":" + this.port);
 		} catch (Exception e) {
 			System.err.println("Server could not connect to Redis server.");
 		}
